@@ -1,0 +1,7 @@
+*.swo
+*.swp
+*.o
+*.a
+*.so
+*.html
+*.js
