@@ -1,0 +1,66 @@
+#/*
+# * Parallel Graph Coloring: 
+# * Author: Kartik Mankad 
+# * Email: kmankad@ncsu.edu
+# * File: Makefile.common
+# * Description: Common paths/variables for all implementations
+# */
+
+# Build Output directory
+BUILD_DIR ?= build
+
+## Path to build .so files in
+LIB_DIR ?= ../../lib
+
+## Sources
+SRCS_ALL ?= $(wildcard *.cpp) $(SRCS)
+
+## Corresponding Objects
+OBJS := $(SRCS_ALL:%.cpp=$(BUILD_DIR)/%.o)
+
+## Include Paths
+INCDIRS_ALL = ../../include $(INCDIRS)
+INCFLAG := $(addprefix -I, $(INCDIRS_ALL))
+
+### Compile time flags
+CXXFLAGS ?= $(INCFLAG) -Wall
+ifneq (,$(DEBUG))
+	CXXFLAGS += -g
+endif
+
+## If the user has defined any .so files they need
+ifdef DEPS
+LDFLAGS_ALL = $(LDFLAGS)
+LDFLAGS_ALL += -L$(LIB_DIR) -Wl,-rpath=$(abspath $(LIB_DIR))
+LDFLAGS_ALL += $(addprefix -l, $(DEPS)) 
+endif
+
+## Rule to build objects
+$(BUILD_DIR)/%.o: %.cpp
+	@mkdir -p $(BUILD_DIR)
+	$(CXX) -fPIC $(CXXFLAGS) -o $(basename $@).o -c $<
+
+# Set LIB_BUILD if you want to generate a .so
+ifdef LIB_BUILD
+all: clean $(LIB_DIR)/lib$(TARGET).so
+
+$(LIB_DIR)/lib$(TARGET).so: $(OBJS)
+	$(CXX) -g -fPIC -shared -o $@ $^
+else	
+# If we're generating a regular executable
+all: clean $(BUILD_DIR)/$(TARGET)
+
+$(BUILD_DIR)/$(TARGET): $(OBJS)
+	$(CXX) $(LDFLAGS_ALL) -o $@ $^
+endif
+
+
+.PHONY: clean
+ifdef LIB_BUILD
+clean:
+	\rm -rf $(BUILD_DIR)
+	\rm -rf $(LIB_DIR)/lib$(TARGET).so
+else
+clean:
+	\rm -rf $(BUILD_DIR)
+endif
