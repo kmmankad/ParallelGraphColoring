@@ -5,3 +5,5 @@
 *.so
 *.html
 build/
+*.mtx
+*.tar.gz
