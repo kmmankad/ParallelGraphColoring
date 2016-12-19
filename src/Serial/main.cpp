@@ -14,6 +14,9 @@
 
 using namespace std;
 
+// Max number of iterations to run
+#define NUM_ITERATIONS 10 // Arbit
+
 // Declare the GraphReader Object
 GraphReader *GReader;
 // Declare the CSR Graph Object
@@ -44,8 +47,11 @@ int main (int argc, char* argv[]){
 	// Initialize the program
 	Initialize(argc, argv);
 
+	// FIXME: Replace with a while(changed..) type of control loop
+	for (int i=0; i<NUM_ITERATIONS; i++){
 	// Call the ColorGraph routine
 	ColorGraph(InputGraph->GetNumVertices(), InputGraph->GetNumEdges(), InputGraph->ColIdx, InputGraph->RowPtr, InputGraph->ColorVector);
+	}
 
 	// Print the coloring to a file
 	InputGraph->PrintColoring();
