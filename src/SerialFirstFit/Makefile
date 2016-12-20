@@ -4,7 +4,7 @@
 # * Email: kmankad@ncsu.edu
 # * Description: A simple serial implementation of the FirstFit algorithm
 # */
-TARGET=Serial
+TARGET=SerialFirstFit
 
 DEPS=GraphReader
 
