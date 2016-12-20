@@ -41,3 +41,22 @@ void CSRGraph::Print(){
 	GraphBase::Print();
 }
 
+bool CSRGraph::VerifyColoring(){
+	bool GoodColoring=true;
+	// For all the vertices
+	for (int i=0; i<NumVertices; i++){
+		int VertexColor = ColorVector[i];
+		// Iterate over the neighbor vertices
+		for (int CurrNodeOffset=RowPtr[i]; CurrNodeOffset<RowPtr[i+1]; CurrNodeOffset++){
+			// Get the neighbor's color
+			int NeighborColor = ColorVector[ColIdx[CurrNodeOffset]];
+			if (NeighborColor == VertexColor){
+				GoodColoring=false;
+				break;
+			}
+		}
+	}
+	return GoodColoring;
+
+
+}

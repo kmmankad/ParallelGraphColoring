@@ -40,6 +40,7 @@ void Initialize(int argc, char* argv[]){
 	GReader = new GraphReader();
 	// Read the input file into a CSRGraph object
 	InputGraph = GReader->ReadCSR(argv[1]);
+	OutputTxtFile = argv[2];
 }
 
 int main (int argc, char* argv[]){
@@ -54,6 +55,10 @@ int main (int argc, char* argv[]){
 	}
 
 	// Print the coloring to a file
+	if (InputGraph->VerifyColoring() == false){
+		LogError("Incorrect Coloring!");
+
+	}
 	InputGraph->PrintColoring();
 	InputGraph->DumpColoringToFile(OutputTxtFile);
 

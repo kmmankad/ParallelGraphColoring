@@ -24,30 +24,46 @@ int GraphBase::GetNumEdges(){
 	return NumEdges;
 }
 
+// Print Graph Info to an arbitary ostream
+void GraphBase::Print(ostream& OutStream){
+		OutStream << "==== Graph Info ==== " << endl;
+		OutStream << "Number of Vertices(m) : " << dec << NumVertices << endl;
+		OutStream << "Number of Edges(nnz)  : " << dec << NumEdges << endl;
+		OutStream << "==================== " << endl;
+}
+
+// Print Graph Info to STDOUT
 void GraphBase::Print(){
-		cout << " ==== Graph Info ==== " << endl;
-
-		cout << " Number of Vertices(m) : " << dec << NumVertices << endl;
-		cout << " Number of Edges(nnz)  : " << dec << NumEdges << endl;
-
-		/* TODO */
-		cout << " ==================== " << endl;
+	Print(cout);
 }
 
+// This function will verify that the nodes are indeed colored properly
 bool GraphBase::VerifyColoring(){
-	/* TODO */
-	return true;
+	LogError("Extend and implement this check for each graph representation!");
+	return false;
 }
 
+// This function outputs the coloring to a file
+// TODO: Override the cout stream on the Print functions to a filestream
+// 	 to avoid duplicating the print strings
 void GraphBase::DumpColoringToFile(string OutFile){
-	/* TODO */
+	ofstream OutFileStream(OutFile.c_str(), ios::out | ios::trunc);
+	// TODO: Add check for file open
+	Print(OutFileStream);
+	PrintColoring(OutFileStream);
 }
 
-void GraphBase::PrintColoring(){
+// Print the colors of the vertices to an arbitary ostream
+void GraphBase::PrintColoring(ostream& OutStream){
 	int NodeNum = 0;
-	LogInfo("NumColors: %0d",(int)ColorVector.size());
+	OutStream << "NumColors: " << (int)ColorVector.size() << endl;
 	vector<int>::iterator it;
 	for (it = ColorVector.begin(); it != ColorVector.end(); it++){
-		 LogInfo("Node[%0d]:%0d", NodeNum++, *it);
+		 OutStream << "Node[" << NodeNum++ << "]:" << *it << endl;
 	}
+}
+
+// Print the colors of the vertices to STDOUT
+void GraphBase::PrintColoring(){
+	PrintColoring(cout);
 }
