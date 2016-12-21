@@ -6,26 +6,49 @@
 # * Description: Common paths/variables for all implementations
 # */
 
+
 # Build Output directory
 BUILD_DIR ?= build
 
 ## Path to build .so files in
 LIB_DIR ?= ../../lib
 
+# CUDA Library Path
+CUDA_LIB_DIR ?= /usr/local/cuda/lib64
+
 ## Sources
+CUDA_SRCS ?= $(wildcard *.cu)
+ifneq (,$(CUDA_SRCS))
+# We have CUDA sources to compile
+NVCXX := nvcc
+SM_ARCH ?= sm_30
+SM_ARCH_FLAG = -arch=$(SM_ARCH)
+NVCXXFLAGS += $(SM_ARCH_FLAG) -dc 
+endif
+
 SRCS_ALL ?= $(wildcard *.cpp) $(SRCS)
 
 ## Corresponding Objects
 OBJS := $(SRCS_ALL:%.cpp=$(BUILD_DIR)/%.o)
+CUDA_OBJS := $(CUDA_SRCS:%.cu=$(BUILD_DIR)/%.o)
 
 ## Include Paths
 INCDIRS_ALL = ../../include $(INCDIRS)
 INCFLAG := $(addprefix -I, $(INCDIRS_ALL))
 
 ### Compile time flags
-CXXFLAGS ?= $(INCFLAG) -Wall
+CXXFLAGS ?= $(INCFLAG)
+NVCXXFLAGS += $(INCFLAG)
+
+# If we're building with debug support
 ifneq (,$(DEBUG))
 	CXXFLAGS += -g
+	NVCXXFLAGS += -g
+endif
+
+# If we're building a library, compile with -fPIC
+ifdef LIB_BUILD
+	CXXFLAGS += -fPIC
 endif
 
 ## If the user has defined any .so files they need
@@ -34,11 +57,24 @@ LDFLAGS_ALL = $(LDFLAGS)
 LDFLAGS_ALL += -L$(LIB_DIR) -Wl,-rpath=$(abspath $(LIB_DIR))
 LDFLAGS_ALL += $(addprefix -l, $(DEPS)) 
 endif
+## If we are compiling CUDA, then we will also be linking it
+# This makefile links the final executable via g++ and NOT nvcc
+# so, we need to dynamically link cudart manually
+ifneq (,$(CUDA_SRCS))
+	LDFLAGS_ALL += -lcudart -lcudadevrt
+	LDFLAGS_ALL += -L$(CUDA_LIB_DIR)
+endif 
 
 ## Rule to build objects
 $(BUILD_DIR)/%.o: %.cpp
 	@mkdir -p $(BUILD_DIR)
-	$(CXX) -fPIC $(CXXFLAGS) -o $(basename $@).o -c $<
+	$(CXX) $(CXXFLAGS) -o $(basename $@).o -c $<
+
+## Rule to build CUDA objects
+$(BUILD_DIR)/%.o: %.cu
+	@mkdir -p $(BUILD_DIR)
+	$(NVCXX) $(NVCXXFLAGS) -o $(basename $@).o -c $<
+
 
 # Set LIB_BUILD if you want to generate a .so
 ifdef LIB_BUILD
@@ -50,8 +86,20 @@ else
 # If we're generating a regular executable
 all: clean $(BUILD_DIR)/$(TARGET)
 
-$(BUILD_DIR)/$(TARGET): $(OBJS)
+# Rule to link and combine all the available objects:
+DEP_OBJS=$(OBJS)
+ifneq (, $(CUDA_SRCS))
+	DEP_OBJS += $(BUILD_DIR)/CUDAObject.o
+	DEP_OBJS += $(CUDA_OBJS)
+endif
+
+$(BUILD_DIR)/$(TARGET): $(DEP_OBJS)
 	$(CXX) $(LDFLAGS_ALL) -o $@ $^
+
+## Rule to build a combined CUDA object
+$(BUILD_DIR)/CUDAObject.o: $(CUDA_OBJS)
+	@mkdir -p $(BUILD_DIR)
+	$(NVCXX) $(SM_ARCH_FLAG) -dlink $^ -o $@ 
 endif
 
 

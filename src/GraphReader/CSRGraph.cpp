@@ -36,11 +36,6 @@ void CSRGraph::DoneAdjList(){
 	RowPtr.push_back(NumEdges);
 }
 
-// Print the graph with info
-void CSRGraph::Print(){
-	GraphBase::Print();
-}
-
 bool CSRGraph::VerifyColoring(){
 	bool GoodColoring=true;
 	// For all the vertices

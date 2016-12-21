@@ -38,7 +38,3 @@ vector<int>* AdjList::GetNeighbors(int NodeNum){
 	//TODO: Add check for NodeNum 
 	return (Adj[NodeNum]);
 }
-
-void AdjList::Print(){
-	GraphBase::Print();
-}

@@ -1,11 +1,12 @@
-#/*
+#ifndef __FIRSTFIT
+#define __FIRSTFIT
+/*
 # * Parallel Graph Coloring: 
 # * Author: Kartik Mankad 
 # * Email: kmankad@ncsu.edu
 # * Description: A simple serial implementation of the FirstFit algorithm
 # */
 #include <iostream>
-#include <stdint.h>
 #include <vector>
 
 using namespace std;
@@ -25,3 +26,5 @@ using namespace std;
 void ColorGraph(int NumVertices, int NNZ, 
 		vector<int> &ColIdx, vector<int> &RowPtr, 
 		vector<int> &ColorVector);
+
+#endif // __FIRSTFIT

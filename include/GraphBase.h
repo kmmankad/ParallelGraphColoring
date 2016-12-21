@@ -6,8 +6,6 @@
 #include <vector>
 #include "Common.h"
 
-#define NO_COLOR 0
-
 using namespace std;
 
 class GraphBase{
