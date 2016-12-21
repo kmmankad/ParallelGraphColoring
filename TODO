@@ -1,0 +1,19 @@
+src/GraphReader/AdjList.cpp:	// TODO: Add check for number of vertices not
+src/GraphReader/AdjList.cpp:	//TODO: Add check for NodeNum 
+src/GraphReader/CSRGraph.cpp:	//TODO: Verify that we have the right number of entries
+src/GraphReader/GraphReader.cpp: * TODO:
+src/GraphReader/GraphReader.cpp:	// TODO: Add an error check for failed open
+src/GraphReader/GraphReader.cpp:	//TODO: Add a null check
+src/GraphReader/GraphReader.cpp:		//TODO: Add an error check here for getline status
+src/GraphReader/GraphBase.cpp:	// TODO: Add check for number of vertices not
+src/GraphReader/GraphBase.cpp:// TODO: Override the cout stream on the Print functions to a filestream
+src/GraphReader/GraphBase.cpp:	// TODO: Add check for file open
+src/ParallelFirstFit/README.md:TODO: Add Instructions
+src/ParallelFirstFit/FirstFit.cu:// TODO: Replace with one thrust::fill call
+src/ParallelFirstFit/main.cu:	//TODO: Add a more robust commandline option parsing mechanism
+src/ParallelFirstFit/main.cu:	// TODO: Enhance the CSRGraph to contain
+src/ParallelFirstFit/main.cu:	// TODO See if the SM version is high enough to use UVM
+src/ParallelFirstFit/main.cu:	// TODO: Try DP and move this loop to the device
+src/ParallelFirstFit/main.cu:		//TODO: Experiment with block sizes
+src/SerialFirstFit/README.md:TODO: Add Instructions
+src/SerialFirstFit/main.cpp:	//TODO: Add a more robust commandline option parsing mechanism
