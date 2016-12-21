@@ -3,9 +3,9 @@
 ##### Algorithm
 This is a C++ implementation of the popular greedy first fit graph coloring algorithm.
 * Till all the vertices are not colored:
-* For each vertex v in the set of vertices V:
-* Iterate over v's neighbors and mark their colors disallowed
-* Find the first available color that is not disallowed and assign it to the vertex v
+  * For each vertex v in the set of vertices V:
+    * Iterate over v's neighbors and mark their colors disallowed
+    * Find the first available color that is not disallowed and assign it to the vertex v
 
 Repeat this snippet till the entire graph is colored.
 
