@@ -12,16 +12,17 @@ Repeat this snippet till the entire graph is colored.
 ##### Usage
 1. Build the GraphReader library. This is a library written to read in MTX (Matrix Market) graph ASCII files. It'll be dynamically linked to our executable. See the `README.md` in `src/GraphReader` for details.
 ```
-cd ../src/GraphReader && make
+$ cd ../src/GraphReader && make
 ```
 2. Build this program: All built components will be in a new folder `build/`
 ```
-make 
+$ make 
 ```
 3. Run the program: The coloring info for the given graph will be written to STDOUT and an output text file.
 ```
-./build/SerialFirstFit <input-mtx-file> <Output-txt-file>
+$ ./build/SerialFirstFit <input-mtx-file> <Output-txt-file>
 ```
+_TODO: Add instructions on how to run the self-test script_
 
 ##### Performance
 TODO
