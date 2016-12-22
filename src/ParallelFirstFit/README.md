@@ -7,7 +7,7 @@ This is a CUDA implementation of the topology driven Parallel Graph Coloring Alg
 
 * We're going with a topology based approach here (rather than worklist based). It should be noted that the worklist based approach will definitely give better performance. With this topology based apporach, we expect the kernel to suffer from a lot of warp divergence and load imbalance and perform poorly as a result.
 
-* An inherent issue I see with the CSR storage is the unaligned and uncoalesced memory access pattern. Need to look into this further.
+* An inherent issue with the CSR storage is the unaligned and uncoalesced memory access pattern. See this [GTC 2010 Talk on the cuSparse Library from Nvidia](http://on-demand.gputechconf.com/gtc/2010/presentations/S12070-Cusparse-Library-a-Set-of-Basic-Linear-Algebra-Subroutines-for-Sparse-Matrices.pdf). Need to explore additional storage formats.
 
 * Main algorithm:
 There are three main parts to this:
@@ -30,6 +30,7 @@ $ cd ../src/GraphReader && make
    All built components will be in a new folder `build/`. 
    This build uses NVCC's separate compile and linking features as described in a [Parallel Forall post here.](https://devblogs.nvidia.com/parallelforall/separate-compilation-linking-cuda-device-code/). See `Makefile.common` for its internals.
    Set `CUDA\_LIB\_DIR` to point to your local CUDA library directory. Default: `/usr/local/cuda/lib64`
+   Set `SM_ARCH` for your GPU. Default: `sm_30`
 ```
 $ make 
 ```
