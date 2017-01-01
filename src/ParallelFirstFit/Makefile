@@ -2,7 +2,7 @@
 # * Parallel Graph Coloring: 
 # * Author: Kartik Mankad 
 # * Email: kmankad@ncsu.edu
-# * Description: A simple serial implementation of the FirstFit algorithm
+# * Description: A simple parallel implementation of the FirstFit algorithm
 # */
 TARGET=ParallelFirstFit
 
