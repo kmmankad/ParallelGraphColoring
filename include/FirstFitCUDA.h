@@ -20,12 +20,13 @@ __global__ void InitializeColorVector(int d_NumVertices, bool* d_ColorValid);
 
 /**
  * ColorGraph:
- * @desc  Applies a parallel first-fit serial algorithm to color
+ * @desc  Applies a parallel first-fit algorithm to color
  * 	  the given graph (in CSR format)
  * @param NumVertices: Number of vertices in the graph
  * @param ColIdx[]   : Concatenated adjacency list of each vertex
  * @param RowPtr[]   : Offsets of each vertex in the ColIdx list
  * @param ColorVector : A vertex-wise color vector for the entire graph
+ * @param changed   : bool flag to indicate that we operated on the graph
  * @return none
  */
 __global__ void ColorGraph(int d_NumVertices, int d_NNZ, int* ColIdx_d, int* d_RowPtr, int* d_ColorVector, bool* d_changed);

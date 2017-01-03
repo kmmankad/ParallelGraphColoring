@@ -16,7 +16,7 @@ using namespace std;
  * @desc  Applies a greedy first-fit serial algorithm to color
  * 	  the given graph (in CSR format)
  * @param NumVertices: Number of vertices in the graph
- * @param NNZ        : Number of non-zero elements in the CSR matrix
+ * @param NNZ        : Number of non-zero elements in the CSR matrix (Number of edges)
  * @param ColIdx[]   : Concatenated adjacency list of each vertex
  * @param RowPtr[]   : Offsets of each vertex in the ColIdx list
  * @param NumColors  : Number of colors used
