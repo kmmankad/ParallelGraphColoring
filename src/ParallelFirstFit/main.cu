@@ -9,6 +9,7 @@
 #include <string>
 #include <cuda.h>
 #include <cuda_runtime_api.h>
+#include <helper_functions.h> // For the SDKTimer
 #include "FirstFitCUDA.h"
 #include "GraphReader.h"
 
@@ -24,10 +25,12 @@ CSRGraph *InputGraph;
 // Declare the device side raw arrays
 int *d_ColIdx, *d_RowPtr, *d_ColorVector;
 bool *d_changed,*changed, *d_ColorValid;
-
 // String vars to hold the filenames
 string InputMTXFile;
 string OutputTxtFile;
+// Timer
+float ExecTime;
+StopWatchInterface *timer = NULL;
 
 // Simple function to print usage
 void PrintUsage(int argc, char* argv[]){
@@ -46,6 +49,9 @@ void Initialize(int argc, char* argv[]){
 	InputGraph = GReader->ReadCSR(argv[1]);
 	OutputTxtFile = argv[2];
 
+	// Print the Input Graph
+	//InputGraph->Print();
+
 	// Allocate Device side vectors/ints
 	// TODO: Enhance the CSRGraph to contain
 	// the allocation for Device side vars. We'd protect that with __CUDACC__
@@ -56,10 +62,13 @@ void Initialize(int argc, char* argv[]){
 	// TODO See if the SM version is high enough to use UVM
 	CUDA_CALL(cudaMemcpy(d_ColIdx, &InputGraph->ColIdx.front(), sizeof(int)*(InputGraph->GetNumEdges()), cudaMemcpyHostToDevice));
 	CUDA_CALL(cudaMemcpy(d_RowPtr, &InputGraph->RowPtr.front(), sizeof(int)*(InputGraph->GetNumVertices()+1), cudaMemcpyHostToDevice));
-	CUDA_CALL(cudaMemcpy(d_ColorVector, &InputGraph->ColorVector.front(), sizeof(int)*(InputGraph->GetNumVertices()), cudaMemcpyHostToDevice));
-	
+	//	CUDA_CALL(cudaMemcpy(d_ColorVector, &InputGraph->ColorVector.front(), sizeof(int)*(InputGraph->GetNumVertices()), cudaMemcpyHostToDevice));
+
 	// Allocate device side memory for the changed var
 	CUDA_CALL(cudaMalloc((void**)&d_changed, sizeof(bool)));	
+
+	// Create a timer to measure execution
+	sdkCreateTimer(&timer);
 }
 
 int main (int argc, char* argv[]){
@@ -67,23 +76,31 @@ int main (int argc, char* argv[]){
 	// Initialize the program
 	Initialize(argc, argv);
 
+	//TODO: Experiment with block sizes
+	dim3 GridSize ((InputGraph->GetNumVertices()-1)/32 + 1, 1, 1);
+	dim3 BlockSize (32, 1, 1); 
+	// Call the init kernel
+	InitializeColorVector<<<GridSize, BlockSize>>>(InputGraph->GetNumVertices(), d_ColorValid, d_ColorVector);		
+	CUDA_CHECK();
+	// Start the timer
+	sdkStartTimer(&timer);
 	// TODO: Try DP and move this loop to the device
 	for (int i=0; i<MAX_NUM_ITERATIONS; i++){
-		//TODO: Experiment with block sizes
-		dim3 GridSize ((InputGraph->GetNumVertices()-1)/32 + 1, 1, 1);
-		dim3 BlockSize (32, 1, 1); 
-		// Call the init kernel
-		InitializeColorVector<<<GridSize, BlockSize>>>(InputGraph->GetNumVertices(), d_ColorValid);		
-		CUDA_CHECK();
 		changed = new bool(true);	
-		while(*changed){
+		while(*changed == true){
 			// Color the graph
 			ColorGraph<<<GridSize, BlockSize>>>(InputGraph->GetNumVertices(), InputGraph->GetNumEdges(), d_ColIdx, d_RowPtr, d_ColorVector, d_changed);
 			// Resolve any invalid coloring scenarios
 			ResolveBadColoring<<<GridSize, BlockSize>>>(InputGraph->GetNumVertices(),d_ColIdx, d_RowPtr, d_ColorVector, d_ColorValid); 
+			CUDA_CHECK();
 			// Get the changed var back to the host to see if we need to proceed
 			CUDA_CALL(cudaMemcpy(changed, d_changed, sizeof(bool), cudaMemcpyDeviceToHost));
 		}
+		// Stop and get the time
+		sdkStopTimer(&timer);
+		ExecTime += sdkGetTimerValue(&timer);
+		// Reset the timer for the next iteration
+		sdkResetTimer(&timer);
 		// Wait for the kernels to finish before going for the next pass
 		CUDA_CALL(cudaDeviceSynchronize());
 	} // end MAX_NUM_ITERATIONS loop
@@ -94,11 +111,12 @@ int main (int argc, char* argv[]){
 	// Verify the coloring
 	if (InputGraph->VerifyColoring() == false){
 		LogError("Incorrect Coloring!");
-
 	}
-	
+
+	LogInfo("Execution Time: %0.2fms", ExecTime);
+
 	// Print the coloring to STDOUT and an output file
-	InputGraph->PrintColoring();
+	//InputGraph->PrintColoring();
 	InputGraph->DumpColoringToFile(OutputTxtFile);
 
 	// Free the device side vectors
@@ -106,6 +124,9 @@ int main (int argc, char* argv[]){
 	CUDA_CALL(cudaFree(d_RowPtr));
 	CUDA_CALL(cudaFree(d_ColorVector));
 	CUDA_CALL(cudaFree(d_ColorValid));
+
+	// Delete the timer
+	sdkDeleteTimer(&timer);
 
 	// cudaDeviceReset causes the driver to clean up all state. While
 	// not mandatory in normal operation, it is good practice.  It is also

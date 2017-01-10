@@ -49,7 +49,7 @@ bool GraphBase::VerifyColoring(){
 void GraphBase::DumpColoringToFile(string OutFile){
 	ofstream OutFileStream(OutFile.c_str(), ios::out | ios::trunc);
 	if (OutFileStream.is_open()){
-		//Print(OutFileStream);
+		Print(OutFileStream);
 		PrintColoring(OutFileStream);
 	}
 }
