@@ -15,6 +15,7 @@ LIB_DIR ?= ../../lib
 
 # CUDA Library Path
 CUDA_LIB_DIR ?= /usr/local/cuda/lib64
+INCDIRS += /usr/local/cuda/samples/common/inc
 
 ## Sources
 CUDA_SRCS ?= $(wildcard *.cu)
@@ -43,7 +44,7 @@ NVCXXFLAGS += $(INCFLAG)
 # If we're building with debug support
 ifneq (,$(DEBUG))
 	CXXFLAGS += -g
-	NVCXXFLAGS += -g
+	NVCXXFLAGS += -g -G
 endif
 
 # If we're building a library, compile with -fPIC
