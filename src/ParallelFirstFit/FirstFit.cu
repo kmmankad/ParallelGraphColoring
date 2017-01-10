@@ -8,10 +8,11 @@
 
 // Init the ColorValid array
 // TODO: Replace with one thrust::fill call
-__global__ void InitializeColorVector(int d_NumVertices, bool* d_ColorValid){
+__global__ void InitializeColorVector(int d_NumVertices, bool* d_ColorValid, int* d_ColorVector){
 	int threadID = blockIdx.x * blockDim.x + threadIdx.x;
 	if (threadID < d_NumVertices){
 		d_ColorValid[threadID] = false;	
+		d_ColorVector[threadID] = NO_COLOR;
 	}
 }
 
@@ -20,9 +21,9 @@ __global__ void ColorGraph(int d_NumVertices, int d_NNZ, int* d_ColIdx, int* d_R
 	int threadID = blockIdx.x * blockDim.x + threadIdx.x;
 	// Temp storage to store the neighbors' colors. 
 	int NeighborColors[MAX_DEGREE];
-	// Set the efault value of changed to false
+	// Set the default value of changed to false
 	*d_changed = false;
-	if (threadID <= d_NNZ) { 
+	if (threadID < d_NumVertices) { 
 		// So that we dont walk over the edge of the d_RowPtr array
 		if (d_ColorVector[threadID] == NO_COLOR){
 			// if the vertex is not colored
@@ -31,7 +32,8 @@ __global__ void ColorGraph(int d_NumVertices, int d_NNZ, int* d_ColIdx, int* d_R
 			for (int CurrNodeOffset=d_RowPtr[threadID]; CurrNodeOffset<d_RowPtr[threadID+1] ; CurrNodeOffset++){
 				// Mark the neighbor's colors unavailable by
 				// pushing them into the NeighborColors vector
-				int NodeColor = d_ColorVector[d_ColIdx[CurrNodeOffset]];
+				int NodeIndex = d_ColIdx[CurrNodeOffset];
+				int NodeColor = d_ColorVector[NodeIndex];
 				NeighborColors[NumNeighbors++] = NodeColor;
 			}
 			// Here, we have the neighbor's colors
@@ -79,7 +81,7 @@ __global__ void ResolveBadColoring(int d_NumVertices, int* d_ColIdx, int* d_RowP
 		// Iterate over the neighbors and check if the coloring is valid	
 		for (int CurrNodeOffset=d_RowPtr[threadID]; CurrNodeOffset<d_RowPtr[threadID+1] ; CurrNodeOffset++){
 			int NeighborColor = d_ColorVector[d_ColIdx[CurrNodeOffset]];
-			if (NeighborColor == d_ColorVector[threadID]){
+			if ((NeighborColor == d_ColorVector[threadID]) && (threadID<d_ColIdx[CurrNodeOffset])){
 				// If the color matches with any one neighbor
 				// its not valid, and we must recolor
 				ColorValid=false;
