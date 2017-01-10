@@ -16,7 +16,7 @@
  * 	there are chances that we color incorrectly. So, we need to go resolve the coloring for those vertices.
  * @return none
  */
-__global__ void InitializeColorVector(int d_NumVertices, bool* d_ColorValid);
+__global__ void InitializeColorVector(int d_NumVertices, bool* d_ColorValid, int* d_ColorVector);
 
 /**
  * ColorGraph:
