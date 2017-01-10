@@ -25,6 +25,7 @@ class AdjList : public GraphBase{
 		~AdjList();
 		void AddEdge(int Src, int Dest);
 		vector<int>* GetNeighbors(int NodeNum);
+		void Print();
 	private:
 		vector< vector<int>* > Adj;
 };

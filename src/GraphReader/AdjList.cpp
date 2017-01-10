@@ -38,3 +38,18 @@ vector<int>* AdjList::GetNeighbors(int NodeNum){
 	//TODO: Add check for NodeNum 
 	return (Adj[NodeNum]);
 }
+
+void AdjList::Print(){
+	// Print the info
+	GraphBase::Print();
+
+	// Print the adjacency lists
+	for (int i=0; i<NumVertices; i++){
+		cout << "[" << i << "] -> {";
+		vector<int>* NeighborVec = GetNeighbors(i);
+		for (int j=0; j< (*NeighborVec).size(); j++){
+			cout << (*NeighborVec)[j] << " , ";
+		}
+		cout << "}" << endl;
+	}
+}
