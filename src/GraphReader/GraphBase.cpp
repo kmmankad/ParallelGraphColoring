@@ -48,19 +48,24 @@ bool GraphBase::VerifyColoring(){
 // 	 to avoid duplicating the print strings
 void GraphBase::DumpColoringToFile(string OutFile){
 	ofstream OutFileStream(OutFile.c_str(), ios::out | ios::trunc);
-	// TODO: Add check for file open
-	Print(OutFileStream);
-	PrintColoring(OutFileStream);
+	if (OutFileStream.is_open()){
+		//Print(OutFileStream);
+		PrintColoring(OutFileStream);
+	}
 }
 
 // Print the colors of the vertices to an arbitary ostream
 void GraphBase::PrintColoring(ostream& OutStream){
 	int NodeNum = 0;
-	OutStream << "NumColors: " << (int)ColorVector.size() << endl;
-	vector<int>::iterator it;
-	for (it = ColorVector.begin(); it != ColorVector.end(); it++){
-		 OutStream << "Node[" << NodeNum++ << "]:" << *it << endl;
-	}
+	// Lets sort and get the number of unique elements
+	// that would essentially be the number of colors
+	sort(ColorVector.begin(), ColorVector.end());
+	int NumColors = unique(ColorVector.begin(), ColorVector.end()) - ColorVector.begin();
+	OutStream << "NumColors: " << NumColors << endl;
+	//vector<int>::iterator it;
+	//for (it = ColorVector.begin(); it != ColorVector.end(); it++){
+	//	 OutStream << "Node[" << NodeNum++ << "]:" << *it << endl;
+	//}
 }
 
 // Print the colors of the vertices to STDOUT

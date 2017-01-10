@@ -10,7 +10,7 @@
 
 #include "GraphBase.h"
 #include <iostream>
-#include <vector>
+#include <set>
 #include <cassert>
 
 using namespace std;
@@ -24,11 +24,11 @@ class AdjList : public GraphBase{
 		AdjList(int _NumVertices, int _NumEdges);
 		~AdjList();
 		void AddEdge(int Src, int Dest);
-		vector<int>* GetNeighbors(int NodeNum);
+		set<int>* GetNeighbors(int NodeNum);
 		void Print();
 		void Print(ostream& OutStream);
 	private:
-		vector< vector<int>* > Adj;
+		vector< set<int>* > Adj;
 };
 
 #endif // __ADJLIST

@@ -29,6 +29,8 @@ void GraphReader::Reset(){
 CSRGraph* GraphReader::ReadCSR(string FileName){
 	// Read the MTX file into adjacency lists
 	ReadToAdjList(FileName);
+	// Print the AdjList
+	//MyAdjList->Print();	
 	// Pack the adjacency lists into CSRGraph
 	return(PackAdjListToCSR());
 }

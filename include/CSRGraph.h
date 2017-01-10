@@ -11,7 +11,7 @@
 
 #include "GraphBase.h"
 #include <iostream>
-#include <vector>
+#include <set>
 
 using namespace std;
 
@@ -22,7 +22,7 @@ class CSRGraph: public GraphBase{
 		~CSRGraph();
 		vector<int> ColIdx;
 		vector<int> RowPtr;
-		void AddAdjList(vector<int>* Neighbors);
+		void AddAdjList(set<int>* Neighbors);
 		void DoneAdjList();
 		bool VerifyColoring();
 		void Print(ostream & OutStream);

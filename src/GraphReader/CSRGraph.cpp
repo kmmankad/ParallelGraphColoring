@@ -17,23 +17,21 @@ CSRGraph::CSRGraph(int _NumVertices, int _NumEdges):GraphBase(_NumVertices, _Num
 
 }
 
-void CSRGraph::AddAdjList(vector<int>* Neighbors){
+void CSRGraph::AddAdjList(set<int>* Neighbors){
 	// Add the offset to RowPtr
 	RowPtr.push_back(CurrRowPtr);
 	CurrRowPtr += Neighbors->size();
 
 	// Add this adjacencylist to ColIdx
-	vector<int>::iterator it;
+	set<int>::iterator it;
 	for (it = Neighbors->begin(); it != Neighbors->end(); it++){
 		ColIdx.push_back(*it);
 	}	
 }
 
 void CSRGraph::DoneAdjList(){
-	//TODO: Verify that we have the right number of entries
-	
-	// The last entry will be the duplicate of the penultimate entry
-	
+	//TODO: Verify that we have the right number of entries	
+	// The last entry will be the duplicate of the penultimate entry	
 	RowPtr.push_back(CurrRowPtr);
 	
 }

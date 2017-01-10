@@ -11,7 +11,7 @@
 AdjList::AdjList(int _NumVertices, int _NumEdges):GraphBase(_NumVertices, _NumEdges){
 	// Init the Adj container
 	for (int i=0; i<NumVertices; i++){
-		Adj.push_back(new vector<int>);
+		Adj.push_back(new set<int>);
 	}
 }
 
@@ -23,18 +23,20 @@ AdjList::~AdjList(){
 void AdjList::AddEdge(int Src, int Dest){
 	// TODO: Add check for number of vertices not
 	// exceeeding max graph size
-	
+
 	// We need to subtract Src and Dest Node numbers as MatrixMarket is 1-indexed
 	Src--;
 	Dest--;
 
 	// Add the links from Src->Dest
 	// and Dest->Src
-	Adj[Src]->push_back(Dest);
-	Adj[Dest]->push_back(Src);
+	// STL Set automatically prevents the addition of duplicates
+	// so we dont need to explicity worry about that
+	Adj[Src]->insert(Dest);
+	Adj[Dest]->insert(Src);
 }
 
-vector<int>* AdjList::GetNeighbors(int NodeNum){
+set<int>* AdjList::GetNeighbors(int NodeNum){
 	//TODO: Add check for NodeNum 
 	return (Adj[NodeNum]);
 }
@@ -46,9 +48,10 @@ void AdjList::Print(ostream& OutStream){
 	// Print the adjacency lists
 	for (int i=0; i<NumVertices; i++){
 		OutStream << "[" << i << "] -> {";
-		vector<int>* NeighborVec = GetNeighbors(i);
-		for (int j=0; j< (*NeighborVec).size(); j++){
-			OutStream << (*NeighborVec)[j] << " , ";
+		set<int>* NeighborSet = GetNeighbors(i);
+		set<int>::iterator sit;
+		for (sit = (*NeighborSet).begin() ; sit != (*NeighborSet).end(); sit++){
+			OutStream << *sit << " , ";
 		}
 		OutStream << "}" << endl;
 	}
