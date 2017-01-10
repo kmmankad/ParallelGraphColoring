@@ -32,8 +32,10 @@ void CSRGraph::AddAdjList(vector<int>* Neighbors){
 void CSRGraph::DoneAdjList(){
 	//TODO: Verify that we have the right number of entries
 	
-	// The last entry has to be NNZ
-	RowPtr.push_back(NumEdges);
+	// The last entry will be the duplicate of the penultimate entry
+	
+	RowPtr.push_back(CurrRowPtr);
+	
 }
 
 bool CSRGraph::VerifyColoring(){
@@ -57,4 +59,28 @@ DoneCheck:
 	return GoodColoring;
 
 
+}
+
+void CSRGraph::Print(ostream& OutStream){
+	// Print the Graph Info
+	GraphBase::Print(OutStream);
+
+	// Print the ColIdx
+	vector<int>::iterator it;
+	OutStream << "Printing ColIdx : ";
+	for (it=ColIdx.begin(); it!=ColIdx.end(); it++){
+		OutStream << *it << " , ";
+	}
+	OutStream << endl;
+	
+	// Print the RowPtr
+	OutStream << "Printing RowPtr : ";
+	for (it=RowPtr.begin(); it!=RowPtr.end(); it++){
+		OutStream << *it << " , ";
+	}
+	OutStream << endl;
+}
+
+void CSRGraph::Print(){
+	Print(cout);
 }

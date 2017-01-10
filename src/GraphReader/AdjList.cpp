@@ -39,17 +39,21 @@ vector<int>* AdjList::GetNeighbors(int NodeNum){
 	return (Adj[NodeNum]);
 }
 
-void AdjList::Print(){
+void AdjList::Print(ostream& OutStream){
 	// Print the info
-	GraphBase::Print();
+	GraphBase::Print(OutStream);
 
 	// Print the adjacency lists
 	for (int i=0; i<NumVertices; i++){
-		cout << "[" << i << "] -> {";
+		OutStream << "[" << i << "] -> {";
 		vector<int>* NeighborVec = GetNeighbors(i);
 		for (int j=0; j< (*NeighborVec).size(); j++){
-			cout << (*NeighborVec)[j] << " , ";
+			OutStream << (*NeighborVec)[j] << " , ";
 		}
-		cout << "}" << endl;
+		OutStream << "}" << endl;
 	}
+}
+
+void AdjList::Print(){
+	Print(cout);
 }

@@ -25,6 +25,8 @@ class CSRGraph: public GraphBase{
 		void AddAdjList(vector<int>* Neighbors);
 		void DoneAdjList();
 		bool VerifyColoring();
+		void Print(ostream & OutStream);
+		void Print();
 	private:
 		int CurrRowPtr;
 };
