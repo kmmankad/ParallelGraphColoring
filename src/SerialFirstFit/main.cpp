@@ -10,6 +10,9 @@
 #include <cstdlib>
 #include "FirstFit.h"
 #include "GraphReader.h"
+// For the timer...
+#include <time.h>
+#include <sys/time.h>
 
 
 using namespace std;
@@ -24,6 +27,18 @@ CSRGraph *InputGraph;
 // String vars to hold the filenames
 string InputMTXFile;
 string OutputTxtFile;
+// Execution Timer
+double ExecTime;
+
+// Simple timer function
+double get_wall_time(){
+	struct timeval time;
+	if (gettimeofday(&time,NULL)){
+		//  Handle error
+		return 0;
+	}
+	return (double)time.tv_sec + (double)time.tv_usec * .000001;
+}
 
 // Simple function to print usage
 void PrintUsage(int argc, char* argv[]){
@@ -41,6 +56,8 @@ void Initialize(int argc, char* argv[]){
 	// Read the input file into a CSRGraph object
 	InputGraph = GReader->ReadCSR(argv[1]);
 	OutputTxtFile = argv[2];
+	// Init the timer to zero
+	ExecTime = 0.0;
 }
 
 int main (int argc, char* argv[]){
@@ -50,16 +67,24 @@ int main (int argc, char* argv[]){
 
 	// FIXME: Replace with a while(changed..) type of control loop
 	for (int i=0; i<NUM_ITERATIONS; i++){
-	// Call the ColorGraph routine
-	ColorGraph(InputGraph->GetNumVertices(), InputGraph->GetNumEdges(), InputGraph->ColIdx, InputGraph->RowPtr, InputGraph->ColorVector);
+		double StartTime = get_wall_time();	
+		// Call the ColorGraph routine
+		ColorGraph(InputGraph->GetNumVertices(), InputGraph->GetNumEdges(), InputGraph->ColIdx, InputGraph->RowPtr, InputGraph->ColorVector);
+		double EndTime = get_wall_time();	
+		ExecTime += (EndTime - StartTime);
 	}
 
-	// Print the coloring to a file
+	// Verify the coloring
 	if (InputGraph->VerifyColoring() == false){
 		LogError("Incorrect Coloring!");
 
 	}
-	InputGraph->PrintColoring();
+	
+	// Print the coloring
+	LogInfo("Execution Time: %0.2fms", ExecTime);
+	
+	// Print the coloring to a file
+	//InputGraph->PrintColoring();
 	InputGraph->DumpColoringToFile(OutputTxtFile);
 
 

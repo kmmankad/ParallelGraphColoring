@@ -45,12 +45,15 @@ bool CSRGraph::VerifyColoring(){
 		for (int CurrNodeOffset=RowPtr[i]; CurrNodeOffset<RowPtr[i+1]; CurrNodeOffset++){
 			// Get the neighbor's color
 			int NeighborColor = ColorVector[ColIdx[CurrNodeOffset]];
-			if (NeighborColor == VertexColor){
+			// If the vertices' colors match, error out.
+			if ((NeighborColor == VertexColor) && (ColIdx[CurrNodeOffset] != i)){
 				GoodColoring=false;
-				break;
+				LogError("Color for Vertex#%0d and neighbor Vertex#%0d match!",i, ColIdx[CurrNodeOffset]);
+				goto DoneCheck;
 			}
 		}
 	}
+DoneCheck:
 	return GoodColoring;
 
 
