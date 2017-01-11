@@ -82,22 +82,23 @@ int main (int argc, char* argv[]){
 	// Call the init kernel
 	InitializeColorVector<<<GridSize, BlockSize>>>(InputGraph->GetNumVertices(), d_ColorValid, d_ColorVector);		
 	CUDA_CHECK();
-	// Start the timer
-	sdkStartTimer(&timer);
 	// TODO: Try DP and move this loop to the device
 	for (int i=0; i<MAX_NUM_ITERATIONS; i++){
 		changed = new bool(true);	
 		while(*changed == true){
+			// Start the timer
+			sdkStartTimer(&timer);
 			// Color the graph
 			ColorGraph<<<GridSize, BlockSize>>>(InputGraph->GetNumVertices(), InputGraph->GetNumEdges(), d_ColIdx, d_RowPtr, d_ColorVector, d_changed);
 			// Resolve any invalid coloring scenarios
 			ResolveBadColoring<<<GridSize, BlockSize>>>(InputGraph->GetNumVertices(),d_ColIdx, d_RowPtr, d_ColorVector, d_ColorValid); 
+			// Check for any errors with the kernel launch
 			CUDA_CHECK();
+			// Stop and get the time
+			sdkStopTimer(&timer);
 			// Get the changed var back to the host to see if we need to proceed
 			CUDA_CALL(cudaMemcpy(changed, d_changed, sizeof(bool), cudaMemcpyDeviceToHost));
 		}
-		// Stop and get the time
-		sdkStopTimer(&timer);
 		ExecTime += sdkGetTimerValue(&timer);
 		// Reset the timer for the next iteration
 		sdkResetTimer(&timer);
