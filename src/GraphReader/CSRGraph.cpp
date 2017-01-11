@@ -33,7 +33,13 @@ void CSRGraph::DoneAdjList(){
 	//TODO: Verify that we have the right number of entries	
 	// The last entry will be the duplicate of the penultimate entry	
 	RowPtr.push_back(CurrRowPtr);
-	
+	//  In some graphs, the number of edges does not match the total number
+	// of neighbors. Not fully sure why. This causes memory leaks, so this is
+	// a quick fix here.
+	if (CurrRowPtr != NumEdges){
+		//LogInfo("Graph does not have NNZ = Total # of neighbors ");
+		NumEdges = CurrRowPtr;
+	}
 }
 
 bool CSRGraph::VerifyColoring(){
