@@ -40,7 +40,10 @@ void GraphReader::ReadToAdjList(string FileName){
 	// Open the MTX file
 	MTXFile.open(FileName.c_str(), ifstream::in);
 	// TODO: Add an error check for failed open
-
+	if (MTXFile.is_open() == false){
+		LogError("Failed to open input file: %s", FileName.c_str());
+		exit(1);
+	}
 	string Line;
 	// File Reader loop
 	while(getline(MTXFile, Line)){ 
@@ -60,7 +63,7 @@ void GraphReader::ReadToAdjList(string FileName){
 			LogInfo("m:%0d n:%0d nnz:%0d", (int)m, (int)n, (int)nnz);
 			if (m!=n){
 				LogError("Adjacency Matrix should be square! Aborting.");
-				exit(0);
+				exit(1);
 			}
 			break;
 		}
